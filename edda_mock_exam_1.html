@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EDDA Mock Exam — 75 Questions</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Source+Code+Pro:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1c1917;--paper:#faf8f5;--warm:#f5f0ea;--rule:#d6cfc4;--accent:#b91c1c;--accent-soft:#fef2f2;--blue:#1e40af;--blue-soft:#eff6ff;--green:#166534;--green-soft:#f0fdf4;--muted:#78716c;--orange:#c2410c}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Newsreader',serif;background:var(--paper);color:var(--ink);font-size:17px;line-height:1.7;min-height:100vh}
+button{font-family:inherit;cursor:pointer}
+.exam-header{background:var(--ink);color:var(--paper);padding:40px 48px 32px;position:relative}
+.exam-header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--orange),var(--accent))}
+.exam-logo{font-family:'Instrument Serif',serif;font-size:1.1rem;letter-spacing:2px;text-transform:uppercase;color:#a8a29e;margin-bottom:4px}
+.exam-title{font-family:'Instrument Serif',serif;font-size:2.6rem;font-weight:400;line-height:1.15;margin-bottom:6px}
+.exam-title em{font-style:italic;color:#e7c9a0}
+.exam-meta{font-size:.88rem;color:#a8a29e;display:flex;gap:24px;flex-wrap:wrap;margin-top:12px}
+.exam-meta span{display:flex;align-items:center;gap:6px}
+.start-screen{max-width:640px;margin:80px auto;padding:0 24px;text-align:center}
+.start-screen h2{font-family:'Instrument Serif',serif;font-size:2rem;font-weight:400;margin-bottom:16px}
+.start-screen p{color:var(--muted);margin-bottom:32px;font-size:1.02rem}
+.start-btn{background:var(--ink);color:var(--paper);border:none;padding:14px 48px;font-size:1.05rem;font-weight:500;letter-spacing:.5px;transition:all .2s;display:inline-block}
+.start-btn:hover{background:var(--accent);transform:translateY(-1px)}
+.rules{text-align:left;background:var(--warm);border:1px solid var(--rule);padding:24px 28px;margin:32px 0;font-size:.92rem;line-height:1.7}
+.rules strong{display:block;margin-bottom:8px;font-size:.95rem}
+.progress-bar-wrap{position:sticky;top:0;z-index:100;background:var(--paper);border-bottom:1px solid var(--rule);padding:10px 48px;display:flex;align-items:center;gap:16px}
+.progress-track{flex:1;height:6px;background:var(--rule);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:var(--ink);transition:width .4s ease;border-radius:3px}
+.progress-label{font-size:.82rem;color:var(--muted);font-family:'Source Code Pro',monospace;white-space:nowrap}
+.timer{font-family:'Source Code Pro',monospace;font-size:.88rem;color:var(--accent);font-weight:500;min-width:70px;text-align:right}
+.qmap-toggle{font-size:.8rem;color:var(--muted);background:var(--warm);border:1px solid var(--rule);padding:4px 12px;border-radius:3px;white-space:nowrap}
+.qmap-toggle:hover{background:#e8e2d8}
+.qmap-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);z-index:200;display:flex;align-items:center;justify-content:center}
+.qmap-panel{background:var(--paper);border:1px solid var(--rule);padding:28px 32px;max-width:520px;width:90%;max-height:80vh;overflow-y:auto;box-shadow:0 12px 40px rgba(0,0,0,.15)}
+.qmap-panel h3{font-family:'Instrument Serif',serif;font-size:1.3rem;font-weight:400;margin-bottom:16px}
+.qmap-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:6px}
+.qmap-cell{width:100%;aspect-ratio:1;border:1px solid var(--rule);display:flex;align-items:center;justify-content:center;font-family:'Source Code Pro',monospace;font-size:.72rem;background:white;cursor:pointer;transition:all .12s}
+.qmap-cell:hover{border-color:var(--ink)}
+.qmap-cell.answered{background:var(--blue-soft);border-color:var(--blue)}
+.qmap-cell.correct{background:var(--green-soft);border-color:var(--green)}
+.qmap-cell.wrong{background:var(--accent-soft);border-color:var(--accent)}
+.qmap-cell.current{outline:2px solid var(--ink);outline-offset:-2px;font-weight:700}
+.qmap-close{margin-top:16px;text-align:right}
+.question-area{max-width:760px;margin:0 auto;padding:40px 32px 120px}
+.q-number{font-family:'Source Code Pro',monospace;font-size:.75rem;color:var(--accent);letter-spacing:1.5px;font-weight:500;margin-bottom:4px}
+.q-topic{font-size:.78rem;color:var(--muted);margin-bottom:16px;font-style:italic}
+.q-text{font-size:1.12rem;line-height:1.75;margin-bottom:8px}
+.q-text code{font-family:'Source Code Pro',monospace;font-size:.88rem;background:#eee8df;padding:2px 6px;border-radius:3px}
+.q-context{background:var(--warm);border-left:3px solid var(--rule);padding:12px 16px;margin:12px 0 20px;font-size:.94rem;line-height:1.65;color:#44403c}
+.q-context code{font-family:'Source Code Pro',monospace;font-size:.84rem;background:#e2ddd4;padding:1px 5px;border-radius:2px}
+.options{display:flex;flex-direction:column;gap:10px;margin-top:20px}
+.option{border:1.5px solid var(--rule);padding:14px 18px;background:white;font-size:.98rem;line-height:1.6;text-align:left;transition:all .15s;display:flex;gap:12px;align-items:flex-start}
+.option:hover:not(.locked){border-color:#a8a29e;background:#fefdfb}
+.option.selected{border-color:var(--blue);background:var(--blue-soft)}
+.option.correct-answer{border-color:var(--green);background:var(--green-soft)}
+.option.wrong-answer{border-color:var(--accent);background:var(--accent-soft)}
+.option.locked{cursor:default}
+.opt-letter{font-family:'Source Code Pro',monospace;font-weight:600;font-size:.85rem;min-width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:var(--warm);color:var(--muted);flex-shrink:0;margin-top:2px}
+.option.selected .opt-letter{background:var(--blue);color:white}
+.option.correct-answer .opt-letter{background:var(--green);color:white}
+.option.wrong-answer .opt-letter{background:var(--accent);color:white}
+.explanation{margin-top:24px;padding:20px 22px;border-left:3px solid var(--green);background:var(--green-soft);font-size:.94rem;line-height:1.7;display:none}
+.explanation.visible{display:block;animation:fadeIn .3s ease}
+.explanation strong{color:var(--green)}
+.explanation code{font-family:'Source Code Pro',monospace;font-size:.84rem;background:#d1e7d6;padding:1px 5px;border-radius:2px}
+.nav-buttons{display:flex;justify-content:space-between;margin-top:36px;gap:12px}
+.nav-btn{border:1.5px solid var(--rule);background:white;padding:10px 28px;font-size:.92rem;transition:all .15s}
+.nav-btn:hover{background:var(--warm);border-color:#a8a29e}
+.nav-btn.primary{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.nav-btn.primary:hover{background:#2c2926}
+.nav-btn:disabled{opacity:.35;cursor:not-allowed}
+.results{max-width:680px;margin:60px auto;padding:0 24px;text-align:center}
+.results h2{font-family:'Instrument Serif',serif;font-size:2.2rem;font-weight:400;margin-bottom:8px}
+.score-circle{width:160px;height:160px;border-radius:50%;border:4px solid var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:32px auto}
+.score-circle .pct{font-family:'Instrument Serif',serif;font-size:3rem;font-weight:400;line-height:1}
+.score-circle .lbl{font-size:.78rem;color:var(--muted);margin-top:2px}
+.results-breakdown{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin:32px 0;text-align:center}
+.rb-card{padding:16px;background:var(--warm);border:1px solid var(--rule)}
+.rb-card .num{font-family:'Instrument Serif',serif;font-size:1.8rem}
+.rb-card .lbl{font-size:.78rem;color:var(--muted)}
+.topic-breakdown{text-align:left;margin:32px 0}
+.topic-breakdown h3{font-size:1rem;margin-bottom:12px;font-weight:600}
+.tb-row{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--rule);font-size:.9rem}
+.tb-row .tb-name{flex:1}
+.tb-row .tb-score{font-family:'Source Code Pro',monospace;font-size:.85rem;color:var(--muted)}
+.tb-bar{width:100px;height:6px;background:var(--rule);border-radius:3px;overflow:hidden}
+.tb-fill{height:100%;border-radius:3px;transition:width .5s}
+.review-btn{margin-top:24px}
+.review-list{max-width:760px;margin:40px auto;padding:0 32px 80px}
+.review-item{border:1px solid var(--rule);margin-bottom:20px;background:white;padding:20px 22px}
+.review-item.was-correct{border-left:4px solid var(--green)}
+.review-item.was-wrong{border-left:4px solid var(--accent)}
+.review-item.was-skipped{border-left:4px solid var(--muted)}
+.review-q{font-weight:500;margin-bottom:8px}
+.review-your{font-size:.9rem;margin-bottom:4px}
+.review-correct{font-size:.9rem;color:var(--green);font-weight:500}
+.review-expl{font-size:.88rem;color:#57534e;margin-top:8px;line-height:1.6}
+.review-filters{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.filter-btn{font-size:.82rem;padding:5px 14px;border:1px solid var(--rule);background:white;border-radius:2px;transition:all .12s}
+.filter-btn:hover{background:var(--warm)}
+.filter-btn.active{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:600px){.exam-header{padding:24px 20px 20px}.exam-title{font-size:1.8rem}.progress-bar-wrap{padding:8px 16px}.question-area,.review-list{padding-left:16px;padding-right:16px}.results-breakdown{grid-template-columns:1fr}.qmap-grid{grid-template-columns:repeat(8,1fr)}}
+</style>
+</head>
+<body>
+<header class="exam-header">
+  <div class="exam-logo">VU Amsterdam · MSc AI</div>
+  <h1 class="exam-title">EDDA <em>Mock Examination</em></h1>
+  <div class="exam-meta">
+    <span>📝 75 Questions</span>
+    <span>⏱ 180 Minutes</span>
+    <span>📊 All Lecture Topics</span>
+  </div>
+</header>
+<div id="app"></div>
+<script>
+const Q=[
+// ═══ NORMALITY & FOUNDATIONS (1-5) ═══
+{t:"Normality Tests",q:"A researcher applies the Shapiro-Wilk test to n = 500 observations and obtains p = 0.03. The QQ-plot shows points closely following the reference line with only very slight tail deviations. What is the most appropriate conclusion?",o:["The data are clearly non-normal and no parametric test should be used.","The low p-value is likely due to the large sample size; the QQ-plot suggests normality is adequate for practical purposes.","The Shapiro-Wilk test is invalid for n > 50, so the result should be ignored.","A new sample should be collected with fewer observations."],c:1,e:"For large n, even tiny deviations from normality become statistically significant. The Shapiro-Wilk test is best for n < 50. The QQ-plot tells us the deviation is negligible in practice. Always combine numerical tests with visual inspection."},
+{t:"Normality Tests",q:"A QQ-plot shows points curving upward at both the left and right ends, departing from the straight reference line. What does this pattern indicate?",o:["The data are heavily skewed to the right.","The data have heavier tails than a normal distribution (leptokurtic).","The data are perfectly normal — this is expected variation.","There is a single outlier causing the pattern."],c:1,e:"When both tails curve away from the line (upper-right above, lower-left below), the data have heavier tails than normal — more extreme values than expected. This is leptokurtic. An S-shape would indicate skewness instead."},
+{t:"Normality Tests",q:"The Shapiro-Wilk test gives p = 0.42 for n = 15. What does this tell us?",o:["The data are proven to come from a normal distribution.","There is insufficient evidence to reject normality, but this does not prove it — with small n the test has low power.","The data are definitely non-normal because p > 0.05.","We should immediately proceed with any parametric test without further checks."],c:1,e:"A non-significant p-value means we fail to reject H₀ (normality). This does NOT prove normality. With n = 15, the test has low power and may miss genuine non-normality. Always check the QQ-plot too."},
+{t:"Confidence Intervals",q:"A 99% CI for μ is [45.2, 52.8] and a 95% CI is [46.1, 51.9]. Which relationship always holds?",o:["Higher confidence → narrower interval.","Higher confidence → wider interval, because we need more coverage to be more confident.","The intervals are always the same width.","Higher confidence → the interval shifts to the right."],c:1,e:"Higher confidence level → larger critical value → wider interval. The 99% CI always contains the 95% CI. You trade precision (width) for confidence (coverage probability)."},
+{t:"Confidence Intervals",q:"A colleague says: 'There is a 95% probability that μ lies in [10.2, 14.8].' Is this correct?",o:["Yes, that is the standard frequentist interpretation.","No — μ is fixed. The 95% refers to long-run coverage: if we repeated the experiment many times, 95% of resulting CIs would contain the true μ.","No — 95% refers to the probability that the sample mean is in the interval.","Yes, but only if the data are normally distributed."],c:1,e:"In frequentist statistics, μ is fixed (unknown), not random. The CI is random — it changes with each sample. '95% confidence' means the procedure produces intervals containing μ in 95% of repetitions."},
+
+// ═══ ONE-SAMPLE TESTS (6-14) ═══
+{t:"One-Sample t-test",q:"You test H₀: μ = 100 vs H₁: μ ≠ 100 and obtain a 95% CI of [102.3, 108.7]. Which statement is correct?",o:["We fail to reject H₀ at α = 0.05.","We reject H₀ at α = 0.05, because 100 is not inside the confidence interval.","We cannot determine the test outcome from the confidence interval alone.","The p-value must be exactly 0.05."],c:1,e:"Duality: reject H₀: μ = μ₀ at level α ⟺ μ₀ falls outside the (1−α) CI. Since 100 ∉ [102.3, 108.7], we reject H₀ at α = 0.05."},
+{t:"One-Sample t-test",q:"A one-sample t-test with n = 25 yields T = 2.10. The critical value t₀.₀₂₅,₂₄ = 2.064. What is the two-sided test decision at α = 0.05?",o:["Fail to reject H₀ because T < 2.5.","Reject H₀ because |T| = 2.10 > 2.064 = t_{α/2, n−1}.","Reject H₀ only if the p-value is reported separately.","Fail to reject H₀ because 24 degrees of freedom is too few."],c:1,e:"For a two-sided test, reject when |T_obs| > t_{α/2, n−1}. Here 2.10 > 2.064, so we reject. This is equivalent to p-value < 0.05 or μ₀ outside the CI."},
+{t:"One-Sample t-test",q:"You have n = 8 heavily right-skewed observations and want to test whether the population center exceeds 50. Which approach is most appropriate?",o:["One-sample t-test, since it's robust for any sample size.","Sign test — no distributional assumptions, works for small n.","Wilcoxon signed-rank — ranks handle skewness.","Bootstrap test with B = 50 resamples."],c:1,e:"With n = 8 and heavy skewness: t-test normality fails and CLT doesn't help; Wilcoxon requires symmetry (violated here); bootstrap with B = 50 is unreliable. The sign test needs only independence."},
+{t:"Sign Test",q:"You test whether the median salary exceeds €50,000. Of 20 employees, 15 earn above. Which R command is correct?",o:["<code>binom.test(15, 20, p=0.5, alt=\"greater\")</code>","<code>binom.test(15, 20, p=0.5, alt=\"less\")</code>","<code>wilcox.test(salaries, mu=50000, alt=\"greater\")</code>","<code>t.test(salaries, mu=50000, alt=\"greater\")</code>"],c:0,e:"The sign test counts observations exceeding m₀. Under H₀: T = #{Xᵢ > 50000} ~ Bin(n, 0.5). We test H₁: m > 50000 with T = 15, so <code>alt=\"greater\"</code>."},
+{t:"Sign Test",q:"In a sign test, 3 of 20 observations equal m₀ exactly. How should these be handled?",o:["Count them as positive (above m₀).","Count them as negative (below m₀).","Discard them and reduce n to 17.","The sign test cannot be performed."],c:2,e:"Observations at m₀ give no information about the median's direction. Discard them and reduce n. This is why continuous data is preferred — ties are theoretically impossible."},
+{t:"Wilcoxon Signed-Rank",q:"The Wilcoxon signed-rank test is preferred over the sign test when:",o:["The data are ordinal (categorical with order).","The distribution is symmetric but non-normal.","The sample contains many ties at the median.","The sample size is very large (n > 1000)."],c:1,e:"Wilcoxon signed-rank uses signs AND magnitudes (ranks) of deviations, making it more powerful than the sign test. But it requires the additional assumption of symmetry."},
+{t:"Wilcoxon Signed-Rank",q:"For the Wilcoxon signed-rank test with n = 20, the expected value under H₀ is E(T) = n(n+1)/4. What is this value?",o:["E(T) = 20 × 21 / 4 = 105","E(T) = 20 × 19 / 4 = 95","E(T) = 20 × 21 / 2 = 210","E(T) = 20 × 20 / 4 = 100"],c:0,e:"E(T) = n(n+1)/4 = 20×21/4 = 105. Variance = n(n+1)(2n+1)/24 = 20×21×41/24 = 717.5. The normal approximation uses Z = (T − 105)/√717.5."},
+{t:"Binomial Test",q:"A train company claims 95% on-time. You observe 92/100 on-time. For H₀: p = 0.95 vs H₁: p < 0.95, which test?",o:["<code>prop.test(92, 100, p=0.95, alt=\"less\")</code>","<code>binom.test(92, 100, p=0.95, alt=\"less\")</code>","Either works, but exact binomial is preferred since n(1−p₀) = 5 is borderline for the normal approximation.","A chi-squared goodness-of-fit test."],c:2,e:"prop.test needs np₀ ≥ 5 AND n(1−p₀) ≥ 5. Here n(1−p₀) = 5, exactly at the boundary. The exact binomial is safer since it doesn't rely on the normal approximation."},
+{t:"Binomial Test",q:"You observe 520 heads in 1000 flips (p-value = 0.207). If instead you observed 5200/10000 (same proportion), what happens to the p-value?",o:["Stays the same — same proportion.","Decreases substantially — larger n yields smaller p-values for the same deviation.","Increases — more data means more uncertainty.","Cannot be determined without more information."],c:1,e:"T = (p̂ − p₀)/√(p₀(1−p₀)/n). The numerator (0.02) stays the same, but SE shrinks by √10 when n increases 10-fold. So T grows and p drops. With n = 10000, p ≈ 0.00003."},
+
+// ═══ TWO-SAMPLE TESTS (15-28) ═══
+{t:"Paired t-test",q:"Blood pressure is measured before and after a drug on the same 30 patients. A colleague uses a two-sample t-test instead of paired. What happens?",o:["The two-sample test gives a smaller p-value.","Results are identical since both use t-distribution.","The two-sample test ignores within-patient correlation, yielding a larger SE and less power.","The two-sample test is more appropriate here."],c:2,e:"Paired design: each patient is their own control. The paired t-test uses Dᵢ, eliminating between-subject variability. The two-sample test treats them as independent, inflating SE and losing power."},
+{t:"Paired t-test",q:"For a paired t-test, which normality assumption must hold?",o:["Both X and Y must individually be normal.","The differences Dᵢ = Xᵢ − Yᵢ must be approximately normal.","The sum Xᵢ + Yᵢ must be normal.","No normality assumption is needed."],c:1,e:"The paired t-test is a one-sample t-test on the differences Dᵢ. Check normality of DIFFERENCES, not original data. Use <code>qqnorm(x - y)</code>."},
+{t:"Paired t-test",q:"In a paired experiment, patients first take Drug A, then Drug B. Drug B performs better. A reviewer suspects a 'learning effect.' What design fixes this?",o:["Use a larger sample.","A crossover design: randomize order so half get A→B and half get B→A.","Use an independent two-sample t-test.","Apply Bonferroni correction."],c:1,e:"A crossover design randomizes order, balancing any carry-over or learning effect. Include a washout period between treatments."},
+{t:"Two-Sample t-test (Welch)",q:"Why is the Welch t-test (R default) preferred over the pooled t-test?",o:["It assumes equal variances, which is safe.","It doesn't assume equal variances and uses Welch-Satterthwaite df, robust when σ₁ ≠ σ₂.","It auto-switches to nonparametric.","It applies Bonferroni correction."],c:1,e:"Welch doesn't assume σ₁² = σ₂². It estimates variances separately and computes approximate df. It loses little power when variances are actually equal, so it's the safe default."},
+{t:"Two-Sample t-test (Welch)",q:"Groups: n₁ = 8, n₂ = 50. Pooled t-test: t(56) = 2.15, p = 0.036. Welch: t(8.3) = 1.98, p = 0.079. Why the large difference?",o:["Welch is always more conservative.","With very unequal n and unequal variances, the pooled test incorrectly pools SEs. Welch correctly accounts for this, giving df ≈ 8 reflecting limited info from the small group.","Pooled is wrong because n₁ < 30.","Both are equivalent; this is rounding error."],c:1,e:"Unequal group sizes + unequal variances = pooled test is distorted. Welch correctly estimates separate variances and adjusts df downward (~8.3), reflecting the small group's contribution to precision."},
+{t:"Mann-Whitney U",q:"A Mann-Whitney test is significant. Can you always conclude the medians differ?",o:["Yes, it tests medians.","No — it tests whether distributions differ. Medians are only implied to differ if distributions have the same shape.","No — it tests means.","Yes, if both n > 30."],c:1,e:"Mann-Whitney tests H₀: F = G. If distributions have same shape, significance implies median shift. If shapes differ, significance can occur even with equal medians."},
+{t:"Mann-Whitney U",q:"Both groups (n₁=12, n₂=15) look approximately normal with similar spread. Should you use Mann-Whitney or t-test?",o:["Mann-Whitney — always safer.","Welch t-test — when normality holds, it has more power since it uses actual values, not just ranks.","Mann-Whitney — sample sizes are small.","Neither — need n ≥ 30."],c:1,e:"When normality holds, the t-test is more powerful because it uses actual values rather than ranks. Using Mann-Whitney wastes information. Use nonparametric tests only when normality is genuinely doubtful."},
+{t:"Kolmogorov-Smirnov",q:"To test whether a sample follows N(850, 100²) exactly, which test is most appropriate?",o:["Shapiro-Wilk.","One-sample KS: <code>ks.test(x, \"pnorm\", 850, 100)</code>.","QQ-plot only.","One-sample t-test with μ₀ = 850."],c:1,e:"Shapiro-Wilk tests normality with unspecified parameters. The one-sample KS compares to a fully specified F₀. The t-test only tests the mean. Note: estimating μ,σ from data invalidates KS p-values."},
+{t:"Kolmogorov-Smirnov",q:"The KS statistic D measures:",o:["Sum of squared differences between observed and expected frequencies.","Maximum absolute difference between empirical CDF and reference CDF.","Correlation between two samples.","Ratio of between-group to within-group variance."],c:1,e:"D = max|F̂ₙ(x) − F₀(x)|. It finds where the two CDFs are farthest apart. Large D → evidence distributions differ."},
+{t:"Kolmogorov-Smirnov",q:"<code>ks.test(x, y, alt=\"less\")</code> tests H₁: F_X(t) < F_Y(t). What does this imply about the data values?",o:["X values tend to be smaller.","X values tend to be LARGER — F_X(t) < F_Y(t) means fewer X's fall below t.","Variance of X is smaller.","Distributions have the same shape."],c:1,e:"Counterintuitive: F_X(t) < F_Y(t) means P(X ≤ t) < P(Y ≤ t), so fewer X values fall below t → X values tend to be larger. Lower CDF = distribution shifted right."},
+{t:"Permutation Test",q:"Paired permutation test with n = 12 pairs. How many total permutations?",o:["12! = 479,001,600","2¹² = 4,096","12² = 144","C(24,12) = 2,704,156"],c:1,e:"Each pair can be swapped or not: 2 choices per pair × 12 pairs = 2¹² = 4096 total permutations."},
+{t:"Permutation Test",q:"'Exchangeability under H₀' for paired data means:",o:["Sample sizes must be equal.","Under H₀, swapping Xᵢ and Yᵢ within any pair doesn't change the distribution of the test statistic.","Data must be normal.","All observations must have equal variance."],c:1,e:"Exchangeability means under H₀ (no treatment effect), labels within each pair are arbitrary. Flipping them is equally likely. This makes the permutation distribution valid without any distributional assumptions."},
+{t:"Bootstrap",q:"Bootstrap CIs vs. bootstrap tests: what's the key difference?",o:["Both resample from original data.","CI: resample from original data. Test: simulate from a distribution consistent with H₀.","CI: simulate from H₀. Test: resample from data.","No difference."],c:1,e:"Bootstrap CI: resample B times from observed data to estimate sampling distribution. Bootstrap test: generate data under H₀ (e.g., shift data to match H₀) and compute the test statistic."},
+{t:"Bootstrap",q:"The pivotal bootstrap CI is [2T − T*(0.975), 2T − T*(0.025)]. Why '2T minus quantiles' rather than just quantiles?",o:["Arbitrary convention.","The pivotal method reflects the bootstrap distribution around the observed statistic, correcting for bias and giving better coverage.","Makes the interval narrower.","Ensures symmetry."],c:1,e:"The pivotal method accounts for the bootstrap distribution being centered on T, not on θ. By reflecting, if T* tends above T, then θ is likely below T. This gives better coverage than the naive percentile CI, especially for skewed statistics."},
+
+// ═══ CORRELATION & PROPORTIONS (29-35) ═══
+{t:"Correlation Tests",q:"A scatterplot shows a clear U-shape. Pearson r = 0.02. What can you conclude?",o:["X and Y are independent.","They are not linearly correlated but may be strongly associated — Pearson only captures linear relationships.","Relationship is too weak.","Spearman would also be near zero."],c:1,e:"Pearson only measures linear association. A U-shape cancels out. Spearman also struggles (measures monotone, not U-shaped). Low correlation ≠ no relationship. Always plot your data."},
+{t:"Correlation Tests",q:"When should you use Spearman instead of Pearson?",o:["Only when data are ordinal.","When one or both variables are non-normal, or the relationship is monotone but nonlinear.","Only when n < 10.","When testing causation."],c:1,e:"Spearman uses ranks: no bivariate normality needed. It detects monotone (not just linear) trends. Use when QQ-plots show non-normality in either variable."},
+{t:"Correlation Tests",q:"Pearson's test: T = r̂√((n−2)/(1−r̂²)) ~ t(n−2). With n = 52, r̂ = 0.27, what is T approximately?",o:["T ≈ 0.27 × √(50/0.927) ≈ 0.27 × 7.34 ≈ 1.98","T ≈ 0.27 × √52 ≈ 1.95","T ≈ 0.27 × 50 = 13.5","T ≈ 0.27/√52 ≈ 0.037"],c:0,e:"T = 0.27×√(50/(1−0.0729)) = 0.27×√(50/0.927) = 0.27×√53.93 = 0.27×7.34 ≈ 1.98. With df = 50, borderline significant (critical ≈ 2.01)."},
+{t:"Proportion Tests",q:"To compare proportions from two independent groups (45/100 vs 38/120), which approach is correct?",o:["<code>t.test(c(rep(1,45),rep(0,55)), c(rep(1,38),rep(0,82)))</code>","<code>prop.test(c(45,38), c(100,120))</code> only.","<code>binom.test(45, 100, p=38/120)</code>","Both <code>prop.test(c(45,38), c(100,120))</code> and <code>chisq.test</code> on the 2×2 table give equivalent results."],c:3,e:"Both prop.test and chisq.test on the 2×2 contingency table are valid and equivalent for two-proportion comparison. binom.test is one-sample only."},
+{t:"Proportion Tests",q:"The two-proportion test uses pooled p̄ = (x₁+x₂)/(n₁+n₂) under H₀. Why?",o:["To increase sample size.","Under H₀: p₁ = p₂ = p, so pooling gives the best estimate of the common p.","Required by binomial distribution.","Makes the test nonparametric."],c:1,e:"Under H₀, both groups share the same p. The pooled proportion is the best combined estimate. For the CI (which doesn't assume H₀), separate estimates p̂₁ and p̂₂ are used instead."},
+{t:"Proportion Tests",q:"95% CI for p with p̂ = 0.30, n = 25: p̂ ± 1.96√(p̂(1−p̂)/n). Calculate it.",o:["[0.30 ± 1.96×√(0.21/25)] = [0.30 ± 0.180] = [0.12, 0.48]","[0.30 ± 1.96×√(0.30/25)] = [0.09, 0.52]","[0.30 ± 1.96×√(0.09/25)] = [0.18, 0.42]","Must use t-distribution: [0.30 ± 2.064×√(0.21/25)]"],c:0,e:"p̂(1−p̂) = 0.30×0.70 = 0.21. SE = √(0.21/25) = 0.0917. CI = 0.30 ± 1.96×0.0917 = 0.30 ± 0.180 = [0.12, 0.48]. Proportions use z (normal), not t."},
+
+// ═══ ANOVA FAMILY (36-55) ═══
+{t:"One-Way ANOVA",q:"ANOVA table: SSA = 120, RSS = 240, I = 4 groups, n = 40. Compute F.",o:["F = (120/3)/(240/36) = 40/6.67 = 6.0","F = (120/4)/(240/40) = 5.0","F = (240/3)/(120/36) = 24.0","F = 120/240 = 0.5"],c:0,e:"F = MSA/MSE = [SSA/(I−1)]/[RSS/(n−I)] = [120/3]/[240/36] = 40/6.667 = 6.0 with (3,36) df. Always right-sided."},
+{t:"One-Way ANOVA",q:"Residuals vs. fitted plot shows a clear fan shape. What does this indicate?",o:["Normality violated; switch to Kruskal-Wallis.","Heteroscedasticity; consider log-transform or Welch ANOVA.","Outliers; remove and re-fit.","Too many groups; merge."],c:1,e:"Fan shape = variance increasing with fitted value = heteroscedasticity. Remedies: transform Y (log, sqrt) or use Welch ANOVA (<code>oneway.test(y~f)</code>)."},
+{t:"One-Way ANOVA",q:"5-group ANOVA is significant. You want all pairwise comparisons. How many, and why correct?",o:["5 tests; F-test is always two-sided.","10 tests (C(5,2)); family-wise error inflates beyond α without correction.","4 tests vs. reference; no correction.","10 tests; ANOVA already controls error."],c:1,e:"C(5,2) = 10 comparisons. Without correction: P(≥1 false positive) ≈ 1−0.95¹⁰ ≈ 0.40. Use Bonferroni (α/10) or Tukey HSD."},
+{t:"One-Way ANOVA",q:"Using treatment contrasts (R default), <code>summary(lm(y~f))</code> shows intercept = 45.2 and coefficient for 'B' = 3.8. What is the estimated mean for group B?",o:["3.8","45.2 (intercept = group B).","45.2 + 3.8 = 49.0 — intercept is reference group mean; coefficient is the difference.","45.2 − 3.8 = 41.4"],c:2,e:"Treatment contrasts: intercept = reference group mean (e.g., 'A'). Coefficient for 'B' = α_B − α_A. So mean(B) = 45.2 + 3.8 = 49.0."},
+{t:"One-Way ANOVA",q:"What changes with sum contrasts (<code>contr.sum</code>) vs. treatment contrasts?",o:["The F-test p-value changes.","Intercept = grand mean; each coefficient = deviation of group i from grand mean. F-test p-value is unchanged.","Model becomes nonparametric.","Residuals become normal."],c:1,e:"Sum contrasts (Σαᵢ = 0): intercept = μ (grand mean), coefficients = αᵢ = μᵢ − μ. Treatment contrasts: intercept = reference mean, coefficients = differences from reference. The ANOVA F-test is identical either way."},
+{t:"One-Way ANOVA",q:"The estimated residual variance σ̂² in a one-way ANOVA with I groups and n total observations is:",o:["σ̂² = SSA/(I−1)","σ̂² = RSS/(n−I)","σ̂² = (SSA + RSS)/(n−1)","σ̂² = RSS/(n−1)"],c:1,e:"σ̂² = MSE = RSS/(n−I). This is the within-groups mean square. SSA/(I−1) is the between-groups mean square (MSA), not the error variance. The F-statistic is MSA/MSE."},
+{t:"Kruskal-Wallis",q:"Kruskal-Wallis with 4 groups: W = 11.2. Critical χ²₀.₀₅(3) = 7.815. Decision?",o:["Fail to reject.","Reject H₀ at α = 0.05 since 11.2 > 7.815.","Inconclusive — need exact p.","Reject only if W > 11.345."],c:1,e:"Always right-sided. W = 11.2 > 7.815 → reject. The distributions are not all the same. Follow up with pairwise Mann-Whitney tests with correction."},
+{t:"Kruskal-Wallis",q:"The Kruskal-Wallis test can be described as:",o:["A t-test for more than 2 groups.","One-way ANOVA applied to the ranks of the data.","A chi-squared independence test.","A bootstrap test."],c:1,e:"Kruskal-Wallis is conceptually ANOVA on ranks. It replaces values with combined ranks, then tests whether average ranks differ. It generalizes Mann-Whitney to I groups."},
+{t:"Two-Way ANOVA",q:"Interaction f1:f2 has p = 0.002 in a two-way ANOVA. Correct action?",o:["Remove interaction; fit additive model.","Report significant interaction; interpret main effects cautiously using interaction plots.","Ignore — main effects matter more.","Switch to Kruskal-Wallis."],c:1,e:"Significant interaction means one factor's effect depends on the other's level. Don't remove it. Use <code>interaction.plot()</code>. Main effects alone may be misleading."},
+{t:"Two-Way ANOVA",q:"Interaction plot shows non-parallel lines that do NOT cross. What does this suggest?",o:["No interaction.","Ordinal (quantitative) interaction — A's effect depends on B in magnitude but not direction.","Disordinal (qualitative) interaction — A's effect reverses.","Model misspecification."],c:1,e:"Non-parallel but non-crossing = ordinal interaction: factor A has the same direction of effect at all levels of B, but magnitude varies. Crossing = disordinal, where A's effect reverses."},
+{t:"Two-Way ANOVA",q:"Two-way ANOVA with nᵢⱼ = 1 (one obs per cell). Can you test interaction?",o:["Yes, with standard F-test.","No — with 1 obs per cell, the full model is saturated (RSS = 0), leaving no df for interaction testing.","Yes, with Kruskal-Wallis.","Yes, with Type III SS."],c:1,e:"With nᵢⱼ = 1, the interaction model has as many parameters as data points → RSS = 0, no residual df. You can only test main effects by assuming no interaction a priori."},
+{t:"Randomized Block ANOVA",q:"Block effect p = 0.001, treatment p = 0.34. Was blocking a mistake?",o:["Yes — blocks introduced noise.","No — significant blocks means blocking captured variance that would otherwise inflate error. Treatment simply has no effect.","Yes — blocks should never be significant.","No — remove blocks and do one-way ANOVA."],c:1,e:"Significant blocks = there IS between-block variation, and blocking removed it from error. Without blocking, RSS would be larger, making treatment detection even harder. Blocking was helpful."},
+{t:"Randomized Block ANOVA",q:"Why can't you test block × treatment interaction with one obs per cell?",o:["Blocks are random effects.","With 1 obs per cell, interaction is confounded with error — no residual df left.","F-distribution doesn't apply.","You can always test interaction."],c:1,e:"One observation per treatment-block combination uses all df for main effects. Adding interaction leaves 0 residual df. Interaction is confounded with error; additivity is assumed."},
+{t:"Repeated Measures ANOVA",q:"10 subjects taste 4 wines. What acts as the blocking factor?",o:["Wine type.","Rating scale.","Subjects — each subject experiences all treatments.","Wine × subject interaction."],c:2,e:"In repeated measures, subjects experience ALL treatments, acting as blocks. This eliminates between-subject variability, increasing power."},
+{t:"Repeated Measures ANOVA",q:"With I = 2 treatments in repeated measures, the F-test relates to paired t-test how?",o:["They test different hypotheses.","F = t² — the statistics are exactly equivalent.","Paired t-test is more powerful.","They are unrelated."],c:1,e:"With 2 treatments, repeated measures ANOVA reduces to paired t-test. F with (1, n−1) df = t². P-values are identical."},
+{t:"Friedman Test",q:"Friedman test: B = 10 blocks, I = 4 treatments. What are the within-block ranks?",o:["1 to 40 across all observations.","1, 2, 3, 4 — each block ranks independently.","Binary 0/1.","Original data values."],c:1,e:"Friedman ranks WITHIN each block separately (1 to I). Under H₀, each permutation of ranks within a block is equally likely. The test checks whether certain treatments consistently rank high."},
+{t:"Friedman Test",q:"How does the Friedman test relate to the sign test?",o:["They are unrelated.","With I = 2 treatments, the Friedman test is equivalent to the two-sided sign test.","Friedman is always more powerful.","Sign test is parametric Friedman."],c:1,e:"With I = 2, ranking within each block gives {1,2}. Checking which treatment consistently gets rank 2 = counting how many blocks favor one treatment = sign test."},
+
+// ═══ ANCOVA (56-59) ═══
+{t:"ANCOVA",q:"<code>anova(lm(y ~ factor + covariate))</code> gives a misleading p-value for the factor. Why?",o:["Type I (sequential) SS — factor is tested before covariate is adjusted for.","<code>anova()</code> can't handle mixed models.","Covariate must be categorical.","<code>lm()</code> doesn't support covariates."],c:0,e:"R's anova() uses Type I sequential SS: each term tested in order. With factor first, it's tested WITHOUT adjusting for covariate. Fix: <code>y ~ covariate + factor</code> or better: <code>drop1(model, test=\"F\")</code>."},
+{t:"ANCOVA",q:"The key assumption specific to ANCOVA is:",o:["Covariate must be categorical.","Parallel slopes — the regression slope of Y on X must be the same in all factor groups.","Covariate must be uncorrelated with factor.","Covariate must have mean zero."],c:1,e:"ANCOVA assumes a single slope β across all groups (parallel regression lines). If slopes differ, the factor:covariate interaction is significant and ANCOVA is invalid."},
+{t:"ANCOVA",q:"How do you check the parallel slopes assumption in R?",o:["QQ-plot of residuals.","Fit with interaction: <code>anova(lm(y ~ factor * covariate))</code> — if factor:covariate is significant, slopes differ.","Compare R² of separate regressions.","Shapiro-Wilk test."],c:1,e:"Fit the interaction model. If the factor:covariate interaction term is significant, slopes are not parallel and ANCOVA is inappropriate. Use separate regressions per group instead."},
+{t:"ANCOVA",q:"Why does including a covariate typically increase power for the factor test?",o:["Increases sample size.","Reduces RSS — covariate explains variance that would otherwise inflate error, making F larger.","Changes degrees of freedom.","Makes data more normal."],c:1,e:"The covariate explains some variance in Y, reducing RSS. Smaller RSS → smaller MSE → larger F-statistic for the factor → more power."},
+
+// ═══ REGRESSION (60-69) ═══
+{t:"Linear Regression",q:"R² = 0.85 and R²_adj = 0.62 with 3 predictors. What does this suggest?",o:["Good fit.","Very small n relative to p, inflating R².","Multicollinearity only.","Heteroscedastic errors."],c:1,e:"R² always increases with more predictors. R²_adj penalizes. A large gap indicates overfitting — likely small n. With n = 8, p = 3, high R² occurs by chance."},
+{t:"Linear Regression",q:"Prediction interval vs. confidence interval at new x: which is wider?",o:["PI is narrower (targets specific obs).","CI estimates mean uncertainty; PI adds σ² for individual, so PI is always wider.","They are the same.","PI is narrower when n is large."],c:1,e:"CI = uncertainty in E(Y|x). PI adds irreducible individual error σ². PI always wider."},
+{t:"Linear Regression",q:"Cook's distance Dᵢ = 2.3. What does this mean?",o:["Outlier in X-space.","Removing obs i substantially changes ALL fitted values. Dᵢ > 1 indicates high influence.","Residual is 2.3 SDs from zero.","VIF for predictor i is high."],c:1,e:"Cook's distance measures how all fitted values change when obs i is deleted. Dᵢ > 1 is the common cutoff. High influence can come from being an outlier in Y, high leverage in X, or both."},
+{t:"Linear Regression",q:"VIF = 12.4 for predictor X₃. What does this indicate?",o:["X₃ is not significant.","X₃ is strongly collinear with other predictors. VIF > 5 is concerning — drop X₃ or use LASSO/Ridge.","X₃ has a nonlinear effect.","Residuals are non-normal."],c:1,e:"VIF = 1/(1−R²₃) where R²₃ is from regressing X₃ on other X's. VIF = 12.4 means SE(β̂₃) is inflated by √12.4 ≈ 3.5×. Significance tests become unreliable."},
+{t:"Linear Regression",q:"LASSO vs Ridge regression: what is the key difference?",o:["They are identical.","LASSO (L1) can set coefficients exactly to zero (variable selection); Ridge (L2) shrinks all toward zero but none exactly.","Ridge selects variables.","LASSO is for binary outcomes."],c:1,e:"LASSO (L1): RSS + λΣ|βⱼ|. Diamond constraint → exact zeros. Ridge (L2): RSS + λΣβⱼ². Circle constraint → shrinkage only. Elastic net combines both."},
+{t:"Logistic Regression",q:"β̂₁ = 0.693 for X₁ in logistic regression. Interpretation?",o:["Probability increases by 0.693.","One-unit increase in X₁ multiplies odds of Y=1 by exp(0.693) ≈ 2.","Probability doubles.","Log-odds decrease by 0.693."],c:1,e:"exp(β̂₁) = odds ratio. exp(0.693) ≈ 2.0 → one-unit increase in X₁ doubles the odds (not probability!) of Y = 1."},
+{t:"Logistic Regression",q:"To test whether a 3-level factor is significant in logistic regression, which approach?",o:["Individual dummy p-values in summary().","<code>drop1(model, test=\"Chisq\")</code> — likelihood ratio test for the factor as a whole.","<code>anova(model)</code> directly.","Compare AIC only."],c:1,e:"A 3-level factor produces 2 dummies. Individual Wald p-values test each dummy, not the whole factor. <code>drop1(model, test=\"Chisq\")</code> performs a proper LRT for the entire factor."},
+{t:"Logistic Regression",q:"For aggregated binomial data (e.g., 20 successes / 50 trials at given X), which R formula?",o:["<code>glm(y ~ x, family=binomial)</code> with y = 0/1.","<code>glm(cbind(successes, failures) ~ x, family=binomial)</code>","<code>glm(y ~ x, family=poisson)</code>","<code>lm(successes/total ~ x)</code>"],c:1,e:"The aggregated format uses <code>cbind(n_success, n_fail)</code> as response. Each row represents multiple trials, not a single observation."},
+{t:"Poisson Regression",q:"Residual deviance = 312 on 98 df in Poisson regression. What does this mean?",o:["Good fit.","Overdispersion — Var(Y) > E(Y). SEs too small, p-values too optimistic.","Underdispersion.","Deviance can't be compared to df."],c:1,e:"Well-fitting Poisson: deviance ≈ residual df. Here 312 >> 98 (ratio ≈ 3.2) → overdispersion. Use quasi-Poisson or negative binomial."},
+{t:"Poisson Regression",q:"exp(β₁) = 1.15 in Poisson regression. Interpretation?",o:["Expected count increases by 1.15.","One-unit increase in X₁ multiplies expected count by 1.15 — a 15% increase in the rate.","X₁ is not significant.","Log count decreases by 1.15."],c:1,e:"Poisson: log(λ) = β₀ + β₁X₁. Increasing X₁ by 1 multiplies λ by exp(β₁) = 1.15, a 15% increase. This is a rate ratio."},
+
+// ═══ NONLINEAR REGRESSION (70-71) ═══
+{t:"Nonlinear Regression",q:"<code>nls()</code> gives 'singular gradient' error. Most likely cause?",o:["Non-normal data.","Poor starting values — Gauss-Newton algorithm can't converge.","Model is actually linear.","Sample too large."],c:1,e:"nls() uses Gauss-Newton, which needs good starting values θ₀. Poor values → singular gradient matrix. Always derive starting values from plots or domain knowledge."},
+{t:"Nonlinear Regression",q:"Comparing 3-parameter vs 5-parameter nls model. Which test?",o:["t-test on extra parameters.","F-test: F = [(RSS_ω − RSS_Ω)/(5−3)] / [RSS_Ω/(n−5)].","Chi-squared.","Compare R² directly."],c:1,e:"Use <code>anova(small, large)</code>. F = [ΔRSS/Δp] / [RSS_large/df_large] ~ F(2, n−5). Standard nested model comparison."},
+
+// ═══ CATEGORICAL DATA (72-75) ═══
+{t:"χ² Goodness-of-Fit",q:"Die rolled 60 times. Testing fairness. Expected counts and df?",o:["Expected: 10 each; df = 6","Expected: 10 each; df = 5","Expected: 12 each; df = 5","Expected: 10 each; df = 59"],c:1,e:"Fair die: each face p = 1/6. Expected = 60/6 = 10. df = k − 1 = 5. No parameters estimated from data."},
+{t:"χ² Goodness-of-Fit",q:"Fitting a Poisson(λ̂) to data with k = 6 categories, estimating λ from the data. What are the df?",o:["df = 5","df = k − 1 − 1 = 4, because one parameter (λ) was estimated.","df = 4 because Poisson has two parameters.","df = 6"],c:1,e:"df = k − 1 − (estimated parameters). Poisson has 1 parameter λ, estimated from data. df = 6 − 1 − 1 = 4."},
+{t:"Survival Analysis",q:"Patient alive at study end (5 years). Time = 5, status = 0. What is this?",o:["Died at 5 years.","Right-censored — T > 5 but exact event time unknown.","Remove from analysis.","Dropped out."],c:1,e:"Status = 0 = censored. We know T > 5 but not the actual T. Kaplan-Meier and Cox PH handle this correctly."},
+{t:"Survival Analysis",q:"Cox PH model: exp(β₁) = 2.0 for treatment indicator (1=treatment). Interpretation?",o:["Treated patients survive twice as long.","Treated patients have twice the hazard (instantaneous risk) at any time point.","Death probability doubles.","Survival function is 2× higher."],c:1,e:"exp(β₁) = 2.0 is the hazard ratio. Treated patients have 2× instantaneous risk at every time point. Higher hazard = worse prognosis. This does NOT mean half survival time (relationship is nonlinear)."},
+{t:"Fisher's Exact Test",q:"Fisher's exact test for a 2×2 table conditions on the marginal totals. Under H₀, which distribution does cell count n₁₁ follow?",o:["Binomial distribution.","Hypergeometric distribution.","Poisson distribution.","Normal distribution."],c:1,e:"Given fixed marginal totals, n₁₁ follows a hypergeometric distribution under H₀ of independence. This allows exact p-value computation without requiring large-sample approximations, making it ideal for small samples."},
+{t:"χ² Test for Independence",q:"After <code>chisq.test(table)</code>, residual for cell (2,3) is +3.8. What does this mean?",o:["Cell (2,3) has 3.8 more observations than expected.","(O−E)/√E = 3.8: far more observations than expected under independence. This cell is a major driver of the χ² statistic.","The p-value for that cell is 3.8.","The odds ratio for that cell is 3.8."],c:1,e:"Pearson residual = (Oᵢⱼ − Eᵢⱼ)/√Eᵢⱼ. A value of 3.8 means this cell departs strongly from what independence predicts. Large |residual| cells tell you WHERE the departure lies."},
+{t:"Survival Analysis",q:"The log-rank test compares survival curves for two groups. It is analogous to:",o:["A paired t-test on survival times.","A chi-squared test comparing observed vs. expected deaths per group at each event time.","A Wilcoxon rank-sum test on censored data.","A likelihood ratio test from the Cox model."],c:1,e:"The log-rank test sums (Observed − Expected) deaths across all event times for each group, then forms a χ² statistic. It cannot adjust for covariates — use Cox PH model when confounders are present."},
+{t:"Survival Analysis",q:"The 'proportional hazards' assumption in a Cox model means:",o:["All patients have the same hazard function.","The hazard ratio between any two individuals is constant over time — the curves don't cross.","The baseline hazard must be exponential.","Censoring must be non-informative."],c:1,e:"Proportional hazards: h(t|x₁)/h(t|x₂) = exp(β(x₁−x₂)) is constant in t. The hazard RATIO doesn't depend on time. If survival curves cross, this assumption is violated. Check with log-log plots or Schoenfeld residuals."}
+];
+
+// Map to full objects
+const QUESTIONS = Q.map(x => ({topic:x.t, text:x.q, options:x.o, correct:x.c, explanation:x.e, context:x.x||null}));
+
+let state={screen:'start',current:0,answers:new Array(QUESTIONS.length).fill(null),submitted:new Array(QUESTIONS.length).fill(false),startTime:null,endTime:null,timerInterval:null,showMap:false,reviewFilter:'all'};
+
+function render(){
+  const app=document.getElementById('app');
+  if(state.screen==='start')app.innerHTML=renderStart();
+  else if(state.screen==='exam')app.innerHTML=renderExam();
+  else if(state.screen==='results')app.innerHTML=renderResults();
+  else if(state.screen==='review')app.innerHTML=renderReview();
+  bindEvents();
+}
+
+function renderStart(){
+  return `<div class="start-screen">
+    <h2>Are you ready?</h2>
+    <p>75 exam-style questions covering every EDDA topic: normality, confidence intervals, t-tests, nonparametric tests, ANOVA, regression, categorical data, and survival analysis.</p>
+    <div class="rules">
+      <strong>Exam Rules</strong>
+      • 75 multiple-choice questions across all lecture topics<br>
+      • 180-minute timer (starts when you begin)<br>
+      • Navigate freely with the question map<br>
+      • Submit each answer for immediate feedback<br>
+      • Score breakdown by topic at the end
+    </div>
+    <button class="start-btn" data-action="start-exam">Begin Exam →</button>
+  </div>`;
+}
+
+function renderExam(){
+  const q=QUESTIONS[state.current],i=state.current,sel=state.answers[i],done=state.submitted[i];
+  const L=['A','B','C','D'];
+  const ac=state.submitted.filter(Boolean).length;
+  const pct=(ac/QUESTIONS.length*100).toFixed(0);
+  const el=state.startTime?Math.floor((Date.now()-state.startTime)/1000):0;
+  const rem=Math.max(0,10800-el);
+  const h=Math.floor(rem/3600),m=Math.floor((rem%3600)/60),s=rem%60;
+  const ts=h>0?`${h}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`:`${m}:${s.toString().padStart(2,'0')}`;
+
+  let opts=q.options.map((o,j)=>{
+    let c='option';
+    if(done){c+=' locked';if(j===q.correct)c+=' correct-answer';else if(j===sel&&j!==q.correct)c+=' wrong-answer';}
+    else if(j===sel)c+=' selected';
+    return `<button class="${c}" data-action="select" data-idx="${j}"><span class="opt-letter">${L[j]}</span><span>${o}</span></button>`;
+  }).join('');
+
+  let expl='';
+  if(done){const w=sel===q.correct;expl=`<div class="explanation visible"><strong>${w?'✓ Correct!':'✗ Incorrect.'}</strong> ${q.explanation}</div>`;}
+
+  const ctx=q.context?`<div class="q-context">${q.context}</div>`:'';
+
+  let map='';
+  if(state.showMap){
+    const cells=QUESTIONS.map((_,idx)=>{
+      let c='qmap-cell';
+      if(idx===i)c+=' current';
+      if(state.submitted[idx])c+=state.answers[idx]===QUESTIONS[idx].correct?' correct':' wrong';
+      else if(state.answers[idx]!==null)c+=' answered';
+      return `<button class="${c}" data-action="goto" data-idx="${idx}">${idx+1}</button>`;
+    }).join('');
+    map=`<div class="qmap-overlay" data-action="close-map"><div class="qmap-panel" onclick="event.stopPropagation()"><h3>Question Map</h3><div class="qmap-grid">${cells}</div><div style="margin-top:12px;font-size:.78rem;color:var(--muted)">${ac}/${QUESTIONS.length} answered · <span style="color:var(--green)">■</span> correct <span style="color:var(--accent)">■</span> wrong <span style="color:var(--blue)">■</span> selected</div><div class="qmap-close"><button class="nav-btn" data-action="close-map">Close</button></div></div></div>`;
+  }
+
+  return `<div class="progress-bar-wrap"><div class="progress-label">${ac}/${QUESTIONS.length}</div><div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div><button class="qmap-toggle" data-action="open-map">Q${i+1} · Map</button><div class="timer">${ts}</div></div>${map}<div class="question-area"><div class="q-number">QUESTION ${i+1} OF ${QUESTIONS.length}</div><div class="q-topic">${q.topic}</div><div class="q-text">${q.text}</div>${ctx}<div class="options">${opts}</div>${expl}<div class="nav-buttons"><button class="nav-btn" data-action="prev" ${i===0?'disabled':''}>← Previous</button>${!done?`<button class="nav-btn primary" data-action="submit" ${sel===null?'disabled':''}>Check Answer</button>`:i<QUESTIONS.length-1?`<button class="nav-btn primary" data-action="next">Next Question →</button>`:`<button class="nav-btn primary" data-action="finish">View Results →</button>`}${!done&&i<QUESTIONS.length-1?`<button class="nav-btn" data-action="next">Skip →</button>`:''}</div></div>`;
+}
+
+function renderResults(){
+  const correct=state.answers.reduce((s,a,i)=>s+(a===QUESTIONS[i].correct?1:0),0);
+  const skipped=state.answers.filter(a=>a===null).length;
+  const wrong=QUESTIONS.length-correct-skipped;
+  const pct=Math.round(correct/QUESTIONS.length*100);
+  const el=Math.floor(((state.endTime||Date.now())-state.startTime)/1000);
+  const m=Math.floor(el/60),s=el%60;
+  const topics={};
+  QUESTIONS.forEach((q,i)=>{if(!topics[q.topic])topics[q.topic]={correct:0,total:0};topics[q.topic].total++;if(state.answers[i]===q.correct)topics[q.topic].correct++;});
+  const sorted=Object.entries(topics).sort((a,b)=>(a[1].correct/a[1].total)-(b[1].correct/b[1].total));
+  let tb=sorted.map(([n,d])=>{const p=Math.round(d.correct/d.total*100);const col=p>=80?'var(--green)':p>=50?'var(--orange)':'var(--accent)';return `<div class="tb-row"><span class="tb-name">${n}</span><span class="tb-score">${d.correct}/${d.total}</span><div class="tb-bar"><div class="tb-fill" style="width:${p}%;background:${col}"></div></div></div>`;}).join('');
+  const grade=pct>=90?'Outstanding!':pct>=75?'Good work.':pct>=55?'Passed — room to improve.':'Keep studying.';
+  return `<div class="results"><h2>${grade}</h2><div class="score-circle" style="border-color:${pct>=55?'var(--green)':'var(--accent)'}"><span class="pct">${pct}%</span><span class="lbl">${correct}/${QUESTIONS.length}</span></div><div class="results-breakdown"><div class="rb-card"><div class="num" style="color:var(--green)">${correct}</div><div class="lbl">Correct</div></div><div class="rb-card"><div class="num" style="color:var(--accent)">${wrong}</div><div class="lbl">Wrong</div></div><div class="rb-card"><div class="num">${m}:${s.toString().padStart(2,'0')}</div><div class="lbl">Time</div></div></div><div class="topic-breakdown"><h3>Performance by Topic (weakest first)</h3>${tb}</div><button class="nav-btn primary review-btn" data-action="review">Review All Answers →</button><div style="margin-top:12px"><button class="nav-btn" data-action="restart">Retake Exam</button></div></div>`;
+}
+
+function renderReview(){
+  const L=['A','B','C','D'],f=state.reviewFilter;
+  const filtered=QUESTIONS.map((q,i)=>({q,i})).filter(({q,i})=>{
+    if(f==='all')return true;if(f==='wrong')return state.answers[i]!==null&&state.answers[i]!==q.correct;if(f==='correct')return state.answers[i]===q.correct;if(f==='skipped')return state.answers[i]===null;return true;
+  });
+  const items=filtered.map(({q,i})=>{
+    const w=state.answers[i]===q.correct,sk=state.answers[i]===null,ya=state.answers[i]!==null?L[state.answers[i]]:'—';
+    return `<div class="review-item ${sk?'was-skipped':w?'was-correct':'was-wrong'}"><div class="q-number" style="margin-bottom:6px">Q${i+1} · ${q.topic}</div><div class="review-q">${q.text}</div><div class="review-your">Your answer: <strong>${ya}</strong> ${sk?'(skipped)':w?'✓':'✗'}</div>${!w?`<div class="review-correct">Correct: <strong>${L[q.correct]}</strong> — ${q.options[q.correct].replace(/<[^>]*>/g,'')}</div>`:''}
+<div class="review-expl">${q.explanation}</div></div>`;
+  }).join('');
+  const wc=QUESTIONS.filter((q,i)=>state.answers[i]!==null&&state.answers[i]!==q.correct).length;
+  const cc=QUESTIONS.filter((q,i)=>state.answers[i]===q.correct).length;
+  const sc=QUESTIONS.filter((q,i)=>state.answers[i]===null).length;
+  return `<div class="review-list"><div style="margin-bottom:8px"><button class="nav-btn" data-action="back-results">← Back to Results</button></div><div class="review-filters"><button class="filter-btn ${f==='all'?'active':''}" data-action="filter" data-val="all">All (${QUESTIONS.length})</button><button class="filter-btn ${f==='wrong'?'active':''}" data-action="filter" data-val="wrong">Wrong (${wc})</button><button class="filter-btn ${f==='correct'?'active':''}" data-action="filter" data-val="correct">Correct (${cc})</button><button class="filter-btn ${f==='skipped'?'active':''}" data-action="filter" data-val="skipped">Skipped (${sc})</button></div>${filtered.length===0?'<p style="color:var(--muted);padding:20px 0">No questions match this filter.</p>':items}<div style="text-align:center;margin-top:32px"><button class="nav-btn primary" data-action="restart">Retake Exam</button></div></div>`;
+}
+
+function bindEvents(){
+  document.querySelectorAll('[data-action]').forEach(el=>{
+    el.addEventListener('click',e=>{
+      const a=el.dataset.action;
+      if(a==='start-exam'){state.screen='exam';state.startTime=Date.now();state.timerInterval=setInterval(()=>{const t=document.querySelector('.timer');if(!t)return;const r=Math.max(0,10800-Math.floor((Date.now()-state.startTime)/1000));if(r===0){clearInterval(state.timerInterval);finishExam();return;}const h=Math.floor(r/3600),m=Math.floor((r%3600)/60),s=r%60;t.textContent=h>0?`${h}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`:`${m}:${s.toString().padStart(2,'0')}`;},1000);render();}
+      else if(a==='select'&&!state.submitted[state.current]){state.answers[state.current]=parseInt(el.dataset.idx);render();}
+      else if(a==='submit'){state.submitted[state.current]=true;render();}
+      else if(a==='next'){state.current=Math.min(state.current+1,QUESTIONS.length-1);render();window.scrollTo(0,0);}
+      else if(a==='prev'){state.current=Math.max(state.current-1,0);render();window.scrollTo(0,0);}
+      else if(a==='finish')finishExam();
+      else if(a==='review'){state.screen='review';state.reviewFilter='all';render();window.scrollTo(0,0);}
+      else if(a==='back-results'){state.screen='results';render();window.scrollTo(0,0);}
+      else if(a==='filter'){state.reviewFilter=el.dataset.val;render();}
+      else if(a==='open-map'){state.showMap=true;render();}
+      else if(a==='close-map'){state.showMap=false;render();}
+      else if(a==='goto'){state.current=parseInt(el.dataset.idx);state.showMap=false;render();window.scrollTo(0,0);}
+      else if(a==='restart'){clearInterval(state.timerInterval);state={screen:'start',current:0,answers:new Array(QUESTIONS.length).fill(null),submitted:new Array(QUESTIONS.length).fill(false),startTime:null,endTime:null,timerInterval:null,showMap:false,reviewFilter:'all'};render();window.scrollTo(0,0);}
+    });
+  });
+}
+
+function finishExam(){clearInterval(state.timerInterval);state.endTime=Date.now();state.submitted=state.submitted.map(()=>true);state.screen='results';render();window.scrollTo(0,0);}
+
+render();
+</script>
+</body>
+</html>
