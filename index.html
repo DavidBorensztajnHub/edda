@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Entrepreneurship in Analytics & AI — Study Platform</title>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,300;8..60,400;8..60,500;8..60,600;8..60,700&family=Libre+Franklin:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #faf8f5; --paper: #ffffff; --warm: #f2ede6; --warm-dk: #e4ddd3;
+      --ink: #302b26; --ink-soft: #5e564d; --ink-muted: #8a827a; --ink-faint: #b5afa7;
+      --sage: #6d9e72; --sage-bg: #eaf2ea; --sage-tx: #3f7243;
+      --terra: #c07a5f; --terra-bg: #f6ece7; --terra-tx: #9a5a3f;
+      --sky: #6b94b2; --sky-bg: #e8eff5; --sky-tx: #3e6a88;
+      --plum: #9b7fb8; --plum-bg: #f0ecf5; --plum-tx: #6e5a8a;
+      --ff: 'Source Serif 4', 'Georgia', serif;
+      --fs: 'Libre Franklin', 'Helvetica Neue', sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    ::selection { background: var(--sage-bg); color: var(--ink); }
+    body { font-family: var(--ff); background: var(--bg); color: var(--ink); min-height: 100vh; -webkit-font-smoothing: antialiased; }
+    button { cursor: pointer; font-family: var(--fs); }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--warm-dk); border-radius: 4px; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ── Top bar ── */
+    .topbar {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--paper); border-bottom: 1px solid var(--warm-dk);
+      padding: 0 40px; display: flex; align-items: center; justify-content: space-between;
+      height: 60px;
+    }
+    .topbar-left h1 { font-size: 17px; font-weight: 700; line-height: 1.3; }
+    .topbar-left .sub { font-family: var(--fs); font-size: 10.5px; color: var(--ink-muted); margin-top: 1px; }
+    .topbar-tabs { display: flex; gap: 6px; }
+    .topbar-tab {
+      padding: 8px 20px; border-radius: 8px; border: 1px solid var(--warm-dk);
+      background: var(--paper); font-size: 13px; font-weight: 500;
+      color: var(--ink-soft); transition: all .2s;
+    }
+    .topbar-tab.active { background: var(--ink); color: var(--paper); border-color: var(--ink); font-weight: 600; }
+    .topbar-tab:hover:not(.active) { background: var(--warm); }
+
+    /* ── Layout ── */
+    .layout { display: flex; min-height: calc(100vh - 60px); }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 280px; flex-shrink: 0; position: sticky; top: 60px; height: calc(100vh - 60px);
+      overflow-y: auto; background: var(--paper); border-right: 1px solid var(--warm-dk);
+      padding: 16px 0;
+    }
+    .side-week-label {
+      font-family: var(--fs); font-size: 10px; font-weight: 700; letter-spacing: 1.4px;
+      text-transform: uppercase; color: var(--ink); padding: 14px 20px 6px;
+      border: none; background: none; width: 100%; text-align: left;
+      cursor: pointer; transition: background .15s;
+    }
+    .side-week-label:hover { background: var(--warm); }
+    .side-week-label:first-child { padding-top: 4px; }
+    .side-source {
+      display: flex; align-items: center; gap: 8px;
+      padding: 6px 20px; font-size: 12.5px; font-weight: 600;
+      color: var(--ink-soft); border: none; background: none;
+      width: 100%; text-align: left; transition: background .15s;
+    }
+    .side-source:hover { background: var(--warm); }
+    .side-source.lecture { color: var(--plum-tx); }
+    .side-source.paper { color: var(--terra-tx); }
+    .side-topic {
+      display: flex; align-items: baseline; gap: 6px;
+      padding: 4px 20px 4px 40px; border: none; background: none;
+      width: 100%; text-align: left;
+      font-size: 11px; color: var(--ink-muted); line-height: 1.4; transition: background .15s;
+    }
+    .side-topic:hover { background: var(--warm); }
+    .side-topic .num { color: var(--ink-faint); font-weight: 600; flex-shrink: 0; width: 14px; font-size: 9.5px; }
+
+    /* ── Main content ── */
+    .main { flex: 1; min-width: 0; padding: 48px 60px 120px; }
+
+    /* ── Week header in content ── */
+    .week-header {
+      margin-bottom: 16px; padding-bottom: 16px; border-bottom: 2px solid var(--ink);
+    }
+    .week-header h2 { font-size: 28px; font-weight: 700; line-height: 1.25; }
+
+    /* ── Source block (lecture / paper) ── */
+    .source-block { margin-bottom: 56px; }
+    .source-header { margin-bottom: 36px; }
+    .source-header .label {
+      font-family: var(--fs); font-size: 11px; font-weight: 600;
+      letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 8px;
+    }
+    .source-header .label.lecture-label { color: var(--plum); }
+    .source-header .label.paper-label { color: var(--terra); }
+    .source-header h3 { font-size: 24px; font-weight: 700; line-height: 1.3; margin-bottom: 6px; }
+    .source-header .citation { font-family: var(--fs); font-size: 13px; color: var(--ink-muted); line-height: 1.6; font-style: italic; }
+
+    .section { margin-bottom: 40px; scroll-margin-top: 80px; }
+    .section-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 14px; }
+    .section-num { font-family: var(--fs); font-size: 11px; font-weight: 600; color: var(--ink-faint); min-width: 22px; }
+    .section-title { font-size: 20px; font-weight: 600; line-height: 1.35; }
+    .section-body { padding-left: 34px; }
+    .section-body p { font-size: 15.5px; line-height: 1.9; color: var(--ink-soft); margin-bottom: 14px; }
+    .section-body ul, .section-body ol {
+      font-size: 15.5px; line-height: 1.9; color: var(--ink-soft);
+      margin-bottom: 14px; padding-left: 20px;
+    }
+    .section-body li { margin-bottom: 6px; }
+    .section-body .callout {
+      background: var(--sage-bg); border-left: 3px solid var(--sage);
+      padding: 12px 16px; border-radius: 0 8px 8px 0; margin-bottom: 14px;
+      font-size: 14.5px; line-height: 1.8; color: var(--sage-tx); font-weight: 500;
+    }
+    .section-body strong { color: var(--ink); font-weight: 600; }
+    .section-divider { width: 28px; height: 1px; background: var(--warm-dk); margin-top: 10px; margin-left: 34px; }
+
+    .source-badge {
+      margin-top: 16px; padding: 12px 16px; border-radius: 10px;
+      font-family: var(--fs); font-size: 11px; color: var(--ink-muted); line-height: 1.6;
+    }
+    .source-badge.lecture-badge { background: var(--plum-bg); border: 1px solid #9b7fb822; }
+    .source-badge.paper-badge { background: var(--terra-bg); border: 1px solid #c07a5f22; }
+
+    /* ── Week divider ── */
+    .week-divider { height: 1px; background: var(--warm-dk); margin: 60px 0; }
+
+    /* ── Placeholder (flashcards/test) ── */
+    .placeholder { animation: fadeIn .5s ease; padding: 80px 20px; text-align: center; }
+    .placeholder h2 { font-size: 24px; font-weight: 700; margin-bottom: 10px; }
+    .placeholder .msg { font-size: 15px; color: var(--ink-soft); line-height: 1.8; max-width: 440px; margin: 0 auto; }
+
+    /* ── Mobile ── */
+    .mob-btn {
+      display: none; position: fixed; bottom: 20px; left: 20px; z-index: 201;
+      width: 44px; height: 44px; border-radius: 12px; border: 1px solid var(--warm-dk);
+      background: var(--paper); align-items: center; justify-content: center;
+      font-size: 18px; color: var(--ink); box-shadow: 0 2px 12px rgba(0,0,0,.1);
+    }
+    .overlay { position: fixed; inset: 0; background: rgba(0,0,0,.15); z-index: 199; display: none; }
+    .overlay.visible { display: block; }
+
+    @media (max-width: 860px) {
+      .topbar { padding: 0 16px; }
+      .topbar-left h1 { font-size: 14px; }
+      .topbar-left .sub { display: none; }
+      .topbar-tab { padding: 7px 14px; font-size: 12px; }
+      .sidebar {
+        position: fixed; left: 0; top: 60px; z-index: 200; height: calc(100vh - 60px);
+        transform: translateX(-100%); transition: transform .3s;
+        box-shadow: 4px 0 20px rgba(0,0,0,.08);
+      }
+      .sidebar.open { transform: translateX(0); }
+      .main { padding: 32px 20px 100px; }
+      .mob-btn { display: flex !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top bar -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <h1>Entrepreneurship in Analytics &amp; AI</h1>
+      <div class="sub">XM_0090 &middot; Prof. Dr. Wouter Stam &middot; VU Amsterdam</div>
+    </div>
+    <nav class="topbar-tabs" id="topTabs"></nav>
+  </header>
+
+  <div class="overlay" id="overlay" onclick="closeMobile()"></div>
+  <button class="mob-btn" id="mobBtn" onclick="toggleMobile()">&#9776;</button>
+
+  <div class="layout">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main" id="mainContent"></div>
+  </div>
+
+  <script>
+    var APP = {
+      weeks: [],
+      tab: "study",
+      mobileOpen: false,
+
+      addWeek: function(w) {
+        this.weeks.push(w);
+        this.weeks.sort(function(a, b) { return a.num - b.num; });
+      },
+
+      init: function() { this.render(); },
+
+      setTab: function(t) {
+        this.tab = t;
+        this.mobileOpen = false;
+        this.render();
+      },
+
+      render: function() {
+        this.renderTopTabs();
+        this.renderSidebar();
+        this.renderMain();
+        this.renderMobile();
+      },
+
+      renderMobile: function() {
+        var sb = document.getElementById("sidebar");
+        var ov = document.getElementById("overlay");
+        if (this.mobileOpen) { sb.classList.add("open"); ov.classList.add("visible"); }
+        else { sb.classList.remove("open"); ov.classList.remove("visible"); }
+      },
+
+      renderTopTabs: function() {
+        var self = this;
+        var tabs = [
+          { id: "study", label: "Study Mode" },
+          { id: "flashcards", label: "Flashcards" },
+          { id: "exam", label: "Test Mode" },
+        ];
+        var html = "";
+        tabs.forEach(function(t) {
+          html += '<button class="topbar-tab' + (self.tab === t.id ? ' active' : '') + '" '
+            + 'onclick="APP.setTab(\'' + t.id + '\')">' + t.label + '</button>';
+        });
+        document.getElementById("topTabs").innerHTML = html;
+      },
+
+      renderSidebar: function() {
+        var sb = document.getElementById("sidebar");
+        if (this.tab !== "study") { sb.innerHTML = ""; return; }
+
+        var html = "";
+        this.weeks.forEach(function(week, wi) {
+          html += '<button class="side-week-label" onclick="scrollToId(\'w' + week.num + '\')">Week ' + week.num + ' — ' + esc(week.title) + '</button>';
+
+          // Lecture
+          html += '<button class="side-source lecture" onclick="scrollToId(\'w' + week.num + '-lecture\')">Lecture</button>';
+          if (week.sideLabels && week.sideLabels.lecture) {
+            week.sideLabels.lecture.forEach(function(l, i) {
+              html += '<button class="side-topic" onclick="scrollToId(\'w' + week.num + '-lec-' + i + '\')">'
+                + '<span class="num">' + (i + 1) + '</span><span>' + esc(l) + '</span></button>';
+            });
+          }
+
+          // Papers
+          if (week.papers && week.papers.length > 0) {
+            html += '<button class="side-source paper" onclick="scrollToId(\'w' + week.num + '-paper-0\')">Papers</button>';
+            week.papers.forEach(function(p, pi) {
+              html += '<button class="side-topic" onclick="scrollToId(\'w' + week.num + '-paper-' + pi + '\')">'
+                + '<span class="num">&mdash;</span><span>' + esc(p.label) + '</span></button>';
+            });
+          }
+        });
+        sb.innerHTML = html;
+      },
+
+      renderMain: function() {
+        var el = document.getElementById("mainContent");
+
+        if (this.tab === "flashcards") {
+          el.innerHTML = '<div class="placeholder"><h2 style="color:var(--sky)">Flashcards</h2>'
+            + '<p class="msg">Flashcards will be generated once all weekly materials have been uploaded. Check back soon!</p></div>';
+          return;
+        }
+        if (this.tab === "exam") {
+          el.innerHTML = '<div class="placeholder"><h2 style="color:var(--terra)">Test Mode</h2>'
+            + '<p class="msg">The mock exam will be created after all weeks and papers have been processed. Keep uploading your materials!</p></div>';
+          return;
+        }
+
+        var html = '';
+        this.weeks.forEach(function(week, wi) {
+          if (wi > 0) html += '<div class="week-divider"></div>';
+
+          html += '<div class="week-header" id="w' + week.num + '"><h2>Week ' + week.num + ' — ' + esc(week.title) + '</h2></div>';
+
+          // Lecture
+          html += '<div class="source-block" id="w' + week.num + '-lecture">';
+          html += '<div class="source-header"><p class="label lecture-label">Lecture</p>';
+          html += '<h3>' + esc(week.lecture.label) + '</h3></div>';
+          html += renderSections(week.lecture.sections, 'w' + week.num + '-lec');
+          html += '<div class="source-badge lecture-badge"><strong style="color:var(--plum-tx)">Source:</strong> ' + esc(week.lecture.label) + '</div>';
+          html += '</div>';
+
+          // Papers
+          if (week.papers) {
+            week.papers.forEach(function(p, pi) {
+              html += '<div class="source-block" id="w' + week.num + '-paper-' + pi + '">';
+              html += '<div class="source-header"><p class="label paper-label">Paper</p>';
+              html += '<h3>' + esc(p.label) + '</h3>';
+              if (p.citation) html += '<p class="citation">' + esc(p.citation) + '</p>';
+              html += '</div>';
+              html += renderSections(p.sections, 'w' + week.num + '-pap' + pi);
+              html += '<div class="source-badge paper-badge"><strong style="color:var(--terra-tx)">Source:</strong> ' + esc(p.label + ' — ' + p.citation) + '</div>';
+              html += '</div>';
+            });
+          }
+        });
+
+        el.innerHTML = html;
+      },
+    };
+
+    function renderSections(sections, idPrefix) {
+      var html = '';
+      sections.forEach(function(s, i) {
+        html += '<section class="section" id="' + idPrefix + '-' + i + '">';
+        html += '<div class="section-head">';
+        html += '<span class="section-num">' + String(i + 1).padStart(2, '0') + '</span>';
+        html += '<h3 class="section-title">' + esc(s.title) + '</h3>';
+        html += '</div><div class="section-body">';
+        html += renderBody(s.body);
+        html += '</div>';
+        if (i < sections.length - 1) html += '<div class="section-divider"></div>';
+        html += '</section>';
+      });
+      return html;
+    }
+
+    function renderBody(text) {
+      var blocks = text.split('\n\n');
+      var html = '';
+      var i = 0;
+      while (i < blocks.length) {
+        var b = blocks[i];
+        // Callout line (starts with > )
+        if (b.indexOf('> ') === 0) {
+          html += '<div class="callout">' + inline(b.substring(2)) + '</div>';
+          i++; continue;
+        }
+        // Bullet list: gather consecutive lines starting with "- "
+        if (b.indexOf('- ') === 0) {
+          html += '<ul>';
+          while (i < blocks.length && blocks[i].indexOf('- ') === 0) {
+            html += '<li>' + inline(blocks[i].substring(2)) + '</li>';
+            i++;
+          }
+          html += '</ul>';
+          continue;
+        }
+        // Numbered list: gather consecutive lines starting with "1. " etc.
+        if (/^\d+\.\s/.test(b)) {
+          html += '<ol>';
+          while (i < blocks.length && /^\d+\.\s/.test(blocks[i])) {
+            html += '<li>' + inline(blocks[i].replace(/^\d+\.\s/, '')) + '</li>';
+            i++;
+          }
+          html += '</ol>';
+          continue;
+        }
+        // Regular paragraph
+        html += '<p>' + inline(b) + '</p>';
+        i++;
+      }
+      return html;
+    }
+
+    // Parse **bold** within already-escaped text
+    function inline(s) {
+      var t = esc(s);
+      // **bold**
+      t = t.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+      return t;
+    }
+
+    function esc(s) {
+      if (!s) return '';
+      var d = document.createElement('div');
+      d.textContent = s;
+      return d.innerHTML;
+    }
+
+    function scrollToId(id) {
+      var el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      APP.mobileOpen = false;
+      APP.renderMobile();
+    }
+
+    function toggleMobile() {
+      APP.mobileOpen = !APP.mobileOpen;
+      APP.renderMobile();
+    }
+    function closeMobile() {
+      APP.mobileOpen = false;
+      APP.renderMobile();
+    }
+  </script>
+
+  <script src="weeks/week1.js"></script>
+  <script src="weeks/week2.js"></script>
+  <script src="weeks/week3.js"></script>
+  <script src="weeks/week4.js"></script>
+  <script src="weeks/week5.js"></script>
+  <script>APP.init();</script>
+</body>
+</html>
